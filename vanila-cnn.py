@@ -16,43 +16,40 @@ def bias_variable(shape):
 
 # x (아래 함수들에서) : A 4-D `Tensor` with shape `[batch, height, width, channels]`
 def conv2d(x, W):
-    return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
-
+    return tf.nn.conv2d(x, filter=W, strides=[1, 1, 1, 1], padding='SAME')
+    # filter: [filter_height, filter_width, in_channels, out_channels]
 
 def max_pool_2x2(x):
-    return tf.nn.max_pool(x, ksize=[1, 2, 2, 1],
-                          strides=[1, 2, 2, 1], padding='SAME')
+    return tf.nn.max_pool(x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
+    # ksize: The size of the window for each dimension of the input tensor
 
 
 mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
 
-config = tf.ConfigProto()
-config.gpu_options.allocator_type = 'BFC'
-sess = tf.InteractiveSession(config=config)
+sess = tf.InteractiveSession()
 
 x = tf.placeholder(tf.float32, shape=[None, 784])
 y_ = tf.placeholder(tf.float32, shape=[None, 10])
 
 # First Convolutional Layer
 
-# [5, 5, 1, 32]: 5x5 convolution patch, 1 input channel, 32 output channel.
+# [5, 5, 1, 32]: 5x5 convolution filter, 1 input channel, 32 output channel.
 # MNIST의 pixel은 gray scale로 표현되는 1개의 벡터이므로 1 input channel임.
 W_conv1 = weight_variable([5, 5, 1, 32])
 b_conv1 = bias_variable([32])
-# 최종적으로, 32개의 output channel에 대해 각각 5x5의 convolution patch (filter) weight 와 1개의 bias 를 갖게 됨.
+# 최종적으로, 32개의 output channel에 대해 각각 5x5의 convolution filter weight 와 1개의 bias 를 갖게 됨.
 
-# x는 [None, 784] (위 placeholder에서 선언). 이건 [batch, 28*28] 이다.
-# x_image는 [batch, 28, 28, 1] 이 됨. -1은 batch size를 유지하는 것이고 1은 color channel.
+# x는 [None, 784] (위 placeholder에서 선언, 784 = 28*28).
+# x_image는 [batch, in_height, in_width, output_channels] 이 됨. -1은 batch size를 유지하는 것.
 x_image = tf.reshape(x, [-1, 28, 28, 1])
 
-# 이제, x_image를 weight tensor와 convolve하고 bias를 더한 뒤 ReLU를 적용. 그리고 마지막으론 max pooling.
+# 이제, x_image를 weight tensor(filter)와 convolve하고 bias를 더한 뒤 ReLU를 적용. 그리고 마지막으론 max pooling.
 h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1)
 h_pool1 = max_pool_2x2(h_conv1)
 
 # Second Convolutional Layer
 
-# channels (features) : 32 => 64
-# 5x5x32x64 짜리 weights.
+# [5, 5, 1, 32]: 5x5 convolution filter, 32 input channel, 64 output channel.
 W_conv2 = weight_variable([5, 5, 32, 64])
 b_conv2 = bias_variable([64])
 
@@ -61,6 +58,7 @@ h_pool2 = max_pool_2x2(h_conv2)
 
 # Fully-Connected Layer
 
+# max pooling 2번 (28 -> 14 -> 7)
 # 7*7*64는 h_pool2의 output (7*7의 reduced image * 64개의 채널). 1024는 fc layer의 뉴런 수.
 W_fc1 = weight_variable([7*7*64, 1024])
 b_fc1 = bias_variable([1024])

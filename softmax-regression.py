@@ -2,7 +2,7 @@ from tensorflow.examples.tutorials.mnist import input_data
 import tensorflow as tf
 
 # download data
-# mnist is traning/validation/test set as Numpy array
+# mnist is training/validation/test set as Numpy array
 # Also it provides a function for iterating through data minibatches
 mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
 
@@ -13,7 +13,7 @@ sess = tf.InteractiveSession()
 # 1-layer NN => Softmax. 1-layer란 Input layer와 Output layer만 있는 것이 1-layer임.
 # placeholder는 실행할때 우리가 값을 넣을 수 있음
 x = tf.placeholder(tf.float32, shape=[None, 784])  # x는 input image. 784 = 28*28, 이미지를 핌 (flatten). 흑백 이미지이므로 각 픽셀은 0/1
-y_ = tf.placeholder(tf.float32, shape=[None, 10])  # _y는 class label. mnist가 0~9까지의 이미지이므로 10개. one-hot 벡터.
+y_ = tf.placeholder(tf.float32, shape=[None, 10])  # y_는 class label. mnist가 0~9까지의 이미지이므로 10개. one-hot 벡터.
 
 # Variables: Weights & Bias
 W = tf.Variable(tf.zeros([784, 10]))
@@ -34,6 +34,7 @@ for i in range(1000):
 
     correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-    print(accuracy.eval(feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
+    print(accuracy.eval(feed_dict={x: mnist.test.images, y_: mnist.test.labels}))  # session 인자가 없을 경우 default session을 이용
+    # print(sess.run(accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))  # 윗 줄과 같은 결과
 
 # test accuracy: 0.9179
