@@ -24,7 +24,7 @@ def max_pool_2x2(x):
     # ksize: The size of the window for each dimension of the input tensor
 
 
-mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
+mnist = input_data.read_data_sets('data', one_hot=True)
 
 sess = tf.InteractiveSession()
 

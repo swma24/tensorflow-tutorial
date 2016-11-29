@@ -4,7 +4,7 @@ import tensorflow as tf
 # download data
 # mnist is training/validation/test set as Numpy array
 # Also it provides a function for iterating through data minibatches
-mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
+mnist = input_data.read_data_sets('data', one_hot=True)
 
 # InteractiveSession을 쓰지 않으면 세션에 그래프를 올리기 전에 그래프를 전부 완성해야 함.
 # 다른말로 하면 계산하기 전에 그래프를 완성해야 함. InteractiveSession을 쓰면 그때 그때 계산이 가능함.
